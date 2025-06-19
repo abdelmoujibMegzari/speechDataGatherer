@@ -11,6 +11,7 @@ const audioEl    = document.getElementById('audioPlayback');
 
 let mediaRecorder, audioBlob;
 
+
 // 1️⃣ Handle registration submit
 regForm.addEventListener('submit', async e => {
   e.preventDefault();
@@ -22,14 +23,14 @@ regForm.addEventListener('submit', async e => {
     method: 'POST',
     body: JSON.stringify(payload)
   });
-  const data = await res.json();
+  if(res.ok){
 
-  if (data.success) {
+    const data = await res.json();
+    
     // show recording view
     formC.style.display = 'none';
     recC.style.display  = 'block';
-    userHeader.textContent = 
-      `${data.email} — ${data.firstName} ${data.lastName}`;
+    userHeader.textContent = 'test';
     sentenceP.textContent = data.next_sentence;
   }
 });
@@ -43,7 +44,10 @@ recordBtn.addEventListener('click', async () => {
     mediaRecorder.ondataavailable = e => chunks.push(e.data);
     mediaRecorder.onstop = () => {
       audioBlob = new Blob(chunks, { type: 'audio/webm' });
-      playBtn.disabled   = false;
+      recordBtn.textContent = 'Record';
+      const url = URL.createObjectURL(audioBlob);
+      audioEl.src = url;
+      audioEl.style.display = 'block';
       submitBtn.disabled = false;
     };
   }
@@ -52,18 +56,11 @@ recordBtn.addEventListener('click', async () => {
     mediaRecorder.start();
     recordBtn.textContent = 'Stop';
   } else {
-    mediaRecorder.stop();
+    await mediaRecorder.stop();
     recordBtn.textContent = 'Record';
   }
 });
 
-// 3️⃣ Playback
-playBtn.addEventListener('click', () => {
-  const url = URL.createObjectURL(audioBlob);
-  audioEl.src = url;
-  audioEl.style.display = 'block';
-  audioEl.play();
-});
 
 // 4️⃣ Submit recording & fetch next sentence
 submitBtn.addEventListener('click', async () => {

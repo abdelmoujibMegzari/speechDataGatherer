@@ -18,15 +18,15 @@
       </div>
       <div class="form-group">
         <label>First Name</label>
-        <input type="text" name="firstName" required>
+        <input type="text" name="first_name" required>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input type="text" name="lastName" required>
+        <input type="text" name="last_name" required>
       </div>
       <div class="form-group">
         <label>Region</label>
-        <select name="region" required>
+        <select name="country" required>
           <option value="">– Select region –</option>
           <option value="NA">North America</option>
           <option value="EU">Europe</option>
@@ -44,10 +44,9 @@
     <p id="sentence" class="intro"></p>
 
     <button id="recordBtn" class="start-btn">Record</button>
-    <button id="playBtn"    class="start-btn" disabled>Play</button>
     <button id="submitRecBtn" class="start-btn" disabled>Submit</button>
     <button id="skipBtn"    class="start-btn">Skip</button>
-    <audio id="audioPlayback" style="display:none;"></audio>
+    <audio id="audioPlayback" style="display:none;" controls></audio>
   </div>
 
   <script src="{{ url_for('static',filename='app.js') }}"></script>
