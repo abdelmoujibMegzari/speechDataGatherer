@@ -3,9 +3,11 @@ from flask import Flask, render_template, flash, request, session, jsonify
 from spectree import SpecTree, Response
 from dtos import UserInfo, NextQueryResponse
 from werkzeug.utils import secure_filename
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
+from models import Base, User
 
-engine = create_engine("sqlite://", echo=True)
+engine = create_engine("sqlite:///udb.db", echo=True)
 
 RECORDS_FOLDER_PATH = "./recordings/"
 app = Flask(__name__)
@@ -32,11 +34,28 @@ def submit():
     data = request.json
         # store user info & reset sentence index
     print(data)
-    session['email']      = data['email']
-    session['firstName']  = data['first_name']
-    session['lastName']   = data['last_name']
-    session['region']     = data['country']
-    session['sentence_i'] = 0
+    with Session(engine) as s:
+        userSelect = select(User).where(User.email == data['email']).limit(1)
+        user = s.scalar(userSelect)
+        print(user)
+        if not user:
+            user = User(
+                email = data['email'],
+                first_name= data['first_name'],
+                last_name= data['last_name'],
+                country = data['country'],
+                current_sentence= 0,
+                permutation_number=0
+            )
+        s.add(user)
+        s.commit()
+        session['id'] = user.id
+        session['email']      = data['email']
+        session['firstName']  = user.first_name
+        session['lastName']   = user.last_name
+        session['region']     = user.country
+        session['sentence_i'] = user.current_sentence
+        session['sentences_permutation'] = user.permutation_number
 
     return jsonify(
         next_sentence= SENTENCES[0],
@@ -82,5 +101,6 @@ def next_sentence():
     )
 
 if __name__ == '__main__':
+    Base.metadata.create_all(engine)
     spec.register(app)
     app.run(debug=True)

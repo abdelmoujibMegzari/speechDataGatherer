@@ -39,7 +39,7 @@
   </div>
 
   <!-- 2) Recording view (hidden initially) -->
-  <div id="recContainer" style="display:none; text-align:center;">
+  <div id="recContainer" style="display:{{'block' if session['id'] else 'none'}}; text-align:center;">
     <h2 id="userHeader"></h2>
     <p id="sentence" class="intro"></p>
 
