@@ -72,7 +72,7 @@ submitBtn.addEventListener('click', async () => {
     body: fd
   });
   const data = await res.json();
-  if (data.success) {
+  if (res.ok) {
     resetRecorder();
     sentenceP.textContent = data.next_sentence || 
       '🎉 You’ve finished all sentences!';
@@ -83,7 +83,7 @@ submitBtn.addEventListener('click', async () => {
 skipBtn.addEventListener('click', async () => {
   const res = await fetch('/next-sentence');
   const data = await res.json();
-  if (data.success) {
+  if (res.ok) {
     resetRecorder();
     sentenceP.textContent = data.next_sentence || 
       '🎉 You’ve finished all sentences!';
@@ -92,7 +92,6 @@ skipBtn.addEventListener('click', async () => {
 
 // helper to reset UI between sentences
 function resetRecorder() {
-  playBtn.disabled = true;
   submitBtn.disabled = true;
   audioEl.style.display = 'none';
   audioEl.src = '';

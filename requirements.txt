@@ -1,3 +1,4 @@
 flask
 spectree
 pydantic
+sqlalchemy
