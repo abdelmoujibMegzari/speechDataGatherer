@@ -2,3 +2,4 @@ flask
 spectree
 pydantic
 sqlalchemy
+numpy

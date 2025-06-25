@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from models import Base, User
+from numpy import random
 
 engine = create_engine("sqlite:///udb.db", echo=True)
 
@@ -27,6 +28,11 @@ SENTENCES = [
     "How razorback-jumping frogs can level six piqued gymnasts!",
     "Pack my box with five dozen liquor jugs.",
 ]
+L=len(SENTENCES)
+random.seed(15765)
+
+NUMBER_OF_PERMUTATIONS = 10
+PRMUTATIONS = [random.permutation(L) for _ in NUMBER_OF_PERMUTATIONS]
 
 
 spec = SpecTree("flask")
@@ -54,7 +60,6 @@ def submit():
                 last_name=data["last_name"],
                 country=data["country"],
                 current_sentence=0,
-                permutation_number=0,
             )
         s.add(user)
         s.commit()
@@ -64,9 +69,9 @@ def submit():
         session["lastName"] = user.last_name
         session["region"] = user.country
         session["sentence_i"] = user.current_sentence
-        session["sentences_permutation"] = user.permutation_number
+        session["sentences_permutation"] = user.id % NUMBER_OF_PERMUTATIONS
         next_sentence = (
-            SENTENCES[session["sentence_i"]]
+            SENTENCES[PRMUTATIONS[session["sentence_i"]]]
             if session["sentence_i"] < len(SENTENCES)
             else None
         )
@@ -91,8 +96,11 @@ def record():
     audio = request.files.get("audio")  # blob from frontend
     # if audio and allowed_file(audio.filename):
     filename = secure_filename(audio.filename)
-    newpath = os.path.join(app.config["UPLOAD_FOLDER"] + filename)
-    print(newpath)
+    if not allowed_file(filename):
+        return r(status=415)
+    if not session.get("id"):
+        return r(status=401)
+    newpath = os.path.join(app.config["UPLOAD_FOLDER"]+session.get("id") + "_"+ PRMUTATIONS[session.get("sentence_i")] + ".webm")
     audio.save(newpath)
 
     # increment index
@@ -105,7 +113,7 @@ def record():
         user.current_sentence = i
         s.commit()
         session["sentence_i"] = i
-    next_sentence = SENTENCES[i] if i < len(SENTENCES) else None
+    next_sentence = SENTENCES[PRMUTATIONS[i]] if i < len(SENTENCES) else None
 
     return jsonify({"next_sentence": next_sentence})
 
@@ -122,7 +130,7 @@ def next_sentence():
         user.current_sentence = i
         s.commit()
         session["sentence_i"] = i
-    next_sentence = SENTENCES[i] if i < len(SENTENCES) else None
+    next_sentence = SENTENCES[PRMUTATIONS[i]] if i < len(SENTENCES) else None
     return NextQueryResponse(
         next_sentence=next_sentence,
     )

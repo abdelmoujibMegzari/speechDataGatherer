@@ -14,4 +14,3 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100))
     country: Mapped[str] = mapped_column(String(100))
     current_sentence: Mapped[int] = mapped_column(Integer)
-    permutation_number: Mapped[int] = mapped_column(Integer)
