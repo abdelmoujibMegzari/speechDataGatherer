@@ -1,54 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Pronunciation SPA</title>
-  <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
-</head>
-<body>
-  <!-- 1) Registration form -->
-  <div id="formContainer">
-    <img src="{{ url_for('static',filename='logo.png') }}" class="logo" alt="Logo">
-    <p class="intro">Welcome! Please fill in your details below to get started.</p>
-    <form id="regForm">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" required>
-      </div>
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" name="first_name" required>
-      </div>
-      <div class="form-group">
-        <label>Last Name</label>
-        <input type="text" name="last_name" required>
-      </div>
-      <div class="form-group">
-        <label>Region</label>
-        <select name="country" required>
-          <option value="">– Select region –</option>
-          <option value="NA">North America</option>
-          <option value="EU">Europe</option>
-          <option value="APAC">Asia Pacific</option>
-          <option value="LATAM">Latin America</option>
-        </select>
-      </div>
-      <button type="submit" class="start-btn">Start</button>
-    </form>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Pronunciation SPA</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <!-- 1) Registration form -->
+    <div
+      id="formContainer"
+      style="display:{{ 'none' if session['id'] else 'block' }};"
+    >
+      <img
+        src="{{ url_for('static',filename='logo.png') }}"
+        class="logo"
+        alt="Logo"
+      />
+      <p class="intro">
+        Welcome! Please fill in your details below to get started.
+      </p>
+      <form id="regForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" name="first_name" required />
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" required />
+        </div>
+        <div class="form-group">
+          <label>Region</label>
+          <select name="country" required>
+            <option value="">– Select region –</option>
+            <option value="NA">North America</option>
+            <option value="EU">Europe</option>
+            <option value="APAC">Asia Pacific</option>
+            <option value="LATAM">Latin America</option>
+          </select>
+        </div>
+        <button type="submit" class="start-btn">Start</button>
+      </form>
+    </div>
 
-  <!-- 2) Recording view (hidden initially) -->
-  <div id="recContainer" style="display:{{'block' if session['id'] else 'none'}}; text-align:center;">
-    <h2 id="userHeader"></h2>
-    <p id="sentence" class="intro"></p>
+    <!-- 2) Recording view (hidden initially) -->
+    <div
+      id="recContainer"
+      style="display:{{'block' if session['id'] else 'none'}}; text-align:center;"
+    >
+      <h2 id="userHeader"></h2>
+      <p id="sentence" class="intro"></p>
 
-    <button id="recordBtn" class="start-btn">Record</button>
-    <button id="submitRecBtn" class="start-btn" disabled>Submit</button>
-    <button id="skipBtn"    class="start-btn">Skip</button>
-    <audio id="audioPlayback" style="display:none;" controls></audio>
-  </div>
+      <button id="recordBtn" class="start-btn">Record</button>
+      <button id="submitRecBtn" class="start-btn" disabled>Submit</button>
+      <button id="skipBtn" class="start-btn">Skip</button>
+      <button id="logoutBtn" class="start-btn">logout</button>
+      <audio id="audioPlayback" style="display: none" controls></audio>
+    </div>
 
-  <script src="{{ url_for('static',filename='app.js') }}"></script>
-</body>
+    <script src="{{ url_for('static',filename='app.js') }}"></script>
+  </body>
 </html>
