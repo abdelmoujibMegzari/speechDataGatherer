@@ -56,7 +56,7 @@
       style="display:{{'block' if session['id'] else 'none'}}; text-align:center;"
     >
       <h2 id="userHeader"></h2>
-      <p id="sentence" class="intro"></p>
+      <p id="sentence" class="intro">{{session['current_sentence']}}</p>
 
       <button id="recordBtn" class="start-btn">Record</button>
       <button id="submitRecBtn" class="start-btn" disabled>Submit</button>

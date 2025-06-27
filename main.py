@@ -28,11 +28,11 @@ SENTENCES = [
     "How razorback-jumping frogs can level six piqued gymnasts!",
     "Pack my box with five dozen liquor jugs.",
 ]
-L=len(SENTENCES)
+L = len(SENTENCES)
 random.seed(15765)
 
 NUMBER_OF_PERMUTATIONS = 10
-PRMUTATIONS = [random.permutation(L) for _ in NUMBER_OF_PERMUTATIONS]
+PRMUTATIONS = [random.permutation(L) for _ in range(NUMBER_OF_PERMUTATIONS)]
 
 
 spec = SpecTree("flask")
@@ -70,20 +70,23 @@ def submit():
         session["region"] = user.country
         session["sentence_i"] = user.current_sentence
         session["sentences_permutation"] = user.id % NUMBER_OF_PERMUTATIONS
+        permutation_index = session.get("id") % NUMBER_OF_PERMUTATIONS
         next_sentence = (
-            SENTENCES[PRMUTATIONS[session["sentence_i"]]]
-            if session["sentence_i"] < len(SENTENCES)
+            SENTENCES[PRMUTATIONS[permutation_index][session["sentence_i"]]]
+            if session["sentence_i"] < L
             else None
         )
+        session["current_sentence"] = next_sentence
     return jsonify(
         next_sentence=next_sentence,
     )
 
 
-ALLOWED_EXTENSIONS = set("webm")
+ALLOWED_EXTENSIONS = {"webm"}
 
 
 def allowed_file(filename):
+    print(ALLOWED_EXTENSIONS)
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
@@ -96,11 +99,19 @@ def record():
     audio = request.files.get("audio")  # blob from frontend
     # if audio and allowed_file(audio.filename):
     filename = secure_filename(audio.filename)
+    print(filename)
     if not allowed_file(filename):
         return r(status=415)
     if not session.get("id"):
         return r(status=401)
-    newpath = os.path.join(app.config["UPLOAD_FOLDER"]+session.get("id") + "_"+ PRMUTATIONS[session.get("sentence_i")] + ".webm")
+    permutation_index = session.get("id") % NUMBER_OF_PERMUTATIONS
+    newpath = os.path.join(
+        app.config["UPLOAD_FOLDER"]
+        + str(session.get("id"))
+        + "_"
+        + str(PRMUTATIONS[permutation_index][session.get("sentence_i")])
+        + ".webm"
+    )
     audio.save(newpath)
 
     # increment index
@@ -113,8 +124,9 @@ def record():
         user.current_sentence = i
         s.commit()
         session["sentence_i"] = i
-    next_sentence = SENTENCES[PRMUTATIONS[i]] if i < len(SENTENCES) else None
-
+    permutation_index = session.get("id") % NUMBER_OF_PERMUTATIONS
+    next_sentence = SENTENCES[PRMUTATIONS[permutation_index][i]] if i < L else None
+    session["current_sentence"] = next_sentence
     return jsonify({"next_sentence": next_sentence})
 
 
@@ -130,7 +142,9 @@ def next_sentence():
         user.current_sentence = i
         s.commit()
         session["sentence_i"] = i
-    next_sentence = SENTENCES[PRMUTATIONS[i]] if i < len(SENTENCES) else None
+    permutation_index = session.get("id") % NUMBER_OF_PERMUTATIONS
+    next_sentence = SENTENCES[PRMUTATIONS[permutation_index][i]] if i < L else None
+    session["current_sentence"] = next_sentence
     return NextQueryResponse(
         next_sentence=next_sentence,
     )

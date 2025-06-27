@@ -30,7 +30,7 @@ regForm.addEventListener("submit", async (e) => {
     // show recording view
     formC.style.display = "none";
     recC.style.display = "block";
-    userHeader.textContent = "test";
+    userHeader.textContent = "";
     setCurrentSentence(data.next_sentence);
   }
 });
@@ -107,7 +107,9 @@ function resetRecorder() {
 
 function setCurrentSentence(nextSentence) {
   sentenceP.textContent = nextSentence || "🎉 You’ve finished all sentences!";
-  recordBtn.style.display = "none";
-  submitBtn.style.display = "none";
-  skipBtn.style.display = "none";
+  if (!nextSentence) {
+    recordBtn.style.display = "none";
+    submitBtn.style.display = "none";
+    skipBtn.style.display = "none";
+  }
 }
